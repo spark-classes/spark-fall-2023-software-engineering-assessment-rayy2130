@@ -34,6 +34,36 @@ function App() {
     console.log(json);
   };
 
+
+  useEffect(() => {
+    const fetchClassList = async() => {
+      const res = await fetch('https://spark-se-assessment.azurewebsites.net/api/class/listBySemester/{fall2022}?buid={U33152475}/',
+      {
+        method: 'GET',
+        headers: {
+          // replace with the variable in globals.ts when i figure it out
+          'x-functions-key': '6se7z2q8WGtkxBlXp_YpU-oPq53Av-y_GSYiKyS_COn6AzFuTjj4BQ==N',
+        }
+
+      }
+      )
+      if (!res.ok) {
+        throw new Error('Failed to fetch class list');
+        console.error('Error fetching class list');
+      }
+      const data: IUniversityClass[] = await res.json();
+      setClassList(data);
+    }
+    fetchClassList();
+
+  }, []);
+
+  console.log(classList);
+  console.log("ehjl");
+
+
+
+
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <Grid container spacing={2} style={{ padding: "1rem" }}>
