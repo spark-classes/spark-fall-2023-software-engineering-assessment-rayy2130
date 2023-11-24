@@ -4,13 +4,14 @@ import { Select, Typography } from "@mui/material";
 /**
  * You will find globals from this file useful!
  */
-import {} from "./globals";
-import { IUniversityClass } from "./types/api_types";
+import {GET_DEFAULT_HEADERS, BASE_API_URL, MY_BU_ID} from "./globals";
+import { IUniversityClass} from "./types/api_types";
 
 function App() {
   // You will need to use more of these!
   const [currClassId, setCurrClassId] = useState<string>("");
   const [classList, setClassList] = useState<IUniversityClass[]>([]);
+  const [studentList, setStudentList] = useState<string>("");
 
   /**
    * This is JUST an example of how you might fetch some data(with a different API).
@@ -34,16 +35,16 @@ function App() {
     console.log(json);
   };
 
-
   useEffect(() => {
+    // const setClassList = async() => {
+
+    // }
     const fetchClassList = async() => {
-      const res = await fetch('https://spark-se-assessment.azurewebsites.net/api/class/listBySemester/{fall2022}?buid={U33152475}/',
+      const res = await fetch("https://spark-se-assessment-api.azurewebsites.net/api/class/listBySemester/fall2022?buid=U33152475",
+      
       {
         method: 'GET',
-        headers: {
-          // replace with the variable in globals.ts when i figure it out
-          'x-functions-key': '6se7z2q8WGtkxBlXp_YpU-oPq53Av-y_GSYiKyS_COn6AzFuTjj4BQ==N',
-        }
+        headers: GET_DEFAULT_HEADERS() 
 
       }
       )
@@ -51,16 +52,29 @@ function App() {
         throw new Error('Failed to fetch class list');
         console.error('Error fetching class list');
       }
-      const data: IUniversityClass[] = await res.json();
+      const data = await res.json();
+      console.log('API Response:', data);
+
       setClassList(data);
+      console.log('class list: ', classList);
+
+      const classIds = data.map((string: { classId: any; }) => string.classId);
+      console.log(classIds);
     }
+
     fetchClassList();
 
+  }, [BASE_API_URL]);
+
+  var i = 0
+
+  useEffect(() => {
+  const fetchStudentList = async() => {
+   
+    const res = await fetch("https://spark-se-assessment-api.azurewebsites.net/api/class/listStudents/${classId[i]}?buid=U33152475")
+  }
+  i = i + 1;
   }, []);
-
-  console.log(classList);
-  console.log("ehjl");
-
 
 
 
@@ -79,6 +93,12 @@ function App() {
           <div style={{ width: "100%" }}>
             <Select fullWidth={true} label="Class">
               {/* You'll need to place some code here to generate the list of items in the selection */}
+              <button id="dropdownButton">login</button>
+              <ul id="menu">
+                  <li><span>User</span></li>
+                  <li><span>Guest</span></li>
+                  <li><span>Admin</span></li>
+              </ul>
             </Select>
           </div>
         </Grid>
