@@ -9,8 +9,8 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
  * You will find globals from this file useful!
  */
 import {GET_DEFAULT_HEADERS, BASE_API_URL, MY_BU_ID} from "./globals";
-import { IUniversityClass} from "./types/api_types";
-import {IStudent} from  "./types/api_types";
+import { IUniversityClass, IStudent} from "./types/api_types";
+import {GradeTable} from "./components/GradeTable";
 
 function App() {
   // You will need to use more of these!
@@ -244,36 +244,13 @@ function App() {
           </Typography>
           <div>Place the grade table here</div>
            {/*need to use Table or DataGrid, as specified by assignment */}
+           <GradeTable
+            studentList={studentList}
+            studentNameList={studentNameList}
+            currClassId={currClassId}
+            classList={classList}
+          />
 
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Student ID</TableCell>
-                  <TableCell>Student Name</TableCell>
-                  <TableCell>Class ID</TableCell>
-                  <TableCell>Class Name</TableCell>
-                  <TableCell>Semester</TableCell>
-                  <TableCell>Final Grade</TableCell>
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {studentList.map((studentId, index) => (
-           
-                  <TableRow key={studentId}>
-                  <TableCell>{studentId}</TableCell>
-                  <TableCell>{studentNameList[index]}</TableCell>
-                  <TableCell>{currClassId}</TableCell>
-                  <TableCell>{classList.find((item) => item.classId === currClassId)?.title}</TableCell>
-                  <TableCell>Fall 2022</TableCell>
-                  <TableCell>{/*  display final grade for each student */}</TableCell>
-                  </TableRow>
-                  
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
         </Grid>
       </Grid>
     </div>

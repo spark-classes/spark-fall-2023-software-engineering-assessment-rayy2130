@@ -24,3 +24,9 @@ export interface IStudent {
   status: string;
   universityId: string;
 }
+export interface IGradeTable {
+  studentList: string[];
+  studentNameList: string[];
+  currClassId: string;
+  classList: IUniversityClass[];
+}
