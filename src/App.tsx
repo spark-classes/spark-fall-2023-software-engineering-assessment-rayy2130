@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Unstable_Grid2";
 import { Select, Typography } from "@mui/material";
+import MenuItem from '@mui/material/MenuItem';
+
 /**
  * You will find globals from this file useful!
  */
@@ -60,12 +62,17 @@ function App() {
 
       const classIds = data.map((string: { classId: any; }) => string.classId);
       console.log(classIds);
+      return classIds;
     }
 
-    fetchClassList();
+    
+    const classIds = fetchClassList();
+    console.log("a: ", classIds);
+
 
   }, [BASE_API_URL]);
-
+   
+  
   var i = 0
 
   useEffect(() => {
@@ -91,22 +98,31 @@ function App() {
             Select a class
           </Typography>
           <div style={{ width: "100%" }}>
-            <Select fullWidth={true} label="Class">
+            
               {/* You'll need to place some code here to generate the list of items in the selection */}
-              <button id="dropdownButton">login</button>
-              <ul id="menu">
-                  <li><span>User</span></li>
-                  <li><span>Guest</span></li>
-                  <li><span>Admin</span></li>
-              </ul>
+              <Select
+              fullWidth={true}
+              label="Class"
+              value={currClassId}
+              onChange={(event) => setCurrClassId(event.target.value as string)}
+            >
+              {classList.map((classItem) => (
+                <MenuItem key={classItem.classId} value={classItem.classId}>
+                  {classItem.title}
+                </MenuItem>
+              ))}
             </Select>
           </div>
         </Grid>
+
         <Grid xs={12} md={8}>
           <Typography variant="h4" gutterBottom>
             Final Grades
           </Typography>
           <div>Place the grade table here</div>
+           {/*need to use Table or DataGrid, as specified by assignment */}
+            
+           hi
         </Grid>
       </Grid>
     </div>
