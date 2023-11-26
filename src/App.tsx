@@ -2,18 +2,24 @@ import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Unstable_Grid2";
 import { Select, Typography } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+
 
 /**
  * You will find globals from this file useful!
  */
 import {GET_DEFAULT_HEADERS, BASE_API_URL, MY_BU_ID} from "./globals";
 import { IUniversityClass} from "./types/api_types";
+import {IStudent} from  "./types/api_types";
 
 function App() {
   // You will need to use more of these!
   const [currClassId, setCurrClassId] = useState<string>("");
   const [classList, setClassList] = useState<IUniversityClass[]>([]);
-  const [studentList, setStudentList] = useState<string>("");
+  const [studentList, setStudentList] = useState<string[]>([]);
+  const [studentName, setStudentName] = useState<IStudent[]>([]);
+  const [studentNameList, setStudentNameList] = useState<string[]>([]);
+
 
   /**
    * This is JUST an example of how you might fetch some data(with a different API).
@@ -75,6 +81,8 @@ function App() {
     const fetchStudentList = async () => {
       try {
         if (currClassId) {
+          console.log("current classs ID: ", currClassId);
+
           const res = await fetch(
             `${BASE_API_URL}/class/listStudents/${currClassId}?buid=${MY_BU_ID}`,
             {
@@ -100,6 +108,105 @@ function App() {
   }, [currClassId]);
 
 
+  useEffect(() => {
+    // Fetch student names for the selected class
+    const fetchStudentNameList = async () => {
+      try {
+        const names = await Promise.all(
+          studentList.map(async (studentId) => {
+            const res = await fetch(
+              `${BASE_API_URL}/student/GetById/${studentId}?buid=${MY_BU_ID}`,
+              {
+                method: "GET",
+                headers: GET_DEFAULT_HEADERS(),
+              }
+            );
+
+            if (!res.ok) {
+              throw new Error(`Failed to fetch student with ID: ${studentId}`);
+            }
+
+            const data = await res.json();
+            return data[0]?.name 
+          })
+        );
+
+        setStudentNameList(names);
+      } catch (error) {
+        console.error("Error fetching student names:", error);
+      }
+    };
+
+    fetchStudentNameList();
+    console.log("student name:", studentNameList);
+  }, [studentList]);
+
+
+
+  
+  // useEffect(() => {
+  //   const fetchStudentName = async (studentId: string) => {
+  //     try {
+  //       const res = await fetch(
+  //         `${BASE_API_URL}/student/GetById/${studentId}?buid=${MY_BU_ID}`,
+  //         {
+  //           method: 'GET',
+  //           headers: GET_DEFAULT_HEADERS(),
+  //         }
+  //       );
+  
+  //       if (!res.ok) {
+  //         throw new Error('Failed to fetch student list');
+  //       }
+  
+  //       const data = await res.json();
+  //       // console.log("data:", data);
+  //       // console.log("student name2:", data[0].name);
+
+  //       return data[0].name;
+  //     } catch (error) {
+  //       console.error('Error fetching student list:', error);
+  //       return null;
+  //     }
+  //   };
+  
+  //   const fetchStudentNameList = async () => {
+  //     try {
+  //       const setStudentNameList = [];
+        
+  //       for (let i = 0; i < studentList.length; i++) {
+  //         const studentId: string = studentList[i];
+  //         const studentName = await fetchStudentName(studentId);
+  //        // console.log("student name:", studentName);
+
+  //       if (studentName) {
+  //         setStudentNameList.push(studentName); // Adds the student name to the list
+  //         }
+
+  //       }
+  //       console.log("all student names:", setStudentNameList);
+
+
+
+  //     // try {
+  //     //   for (let i = 0; i < studentList.length; i++) {
+  //     //     fetchStudentName(studentList[i]);
+  //     //     console.log("student name:", studentName);
+  //     //   }
+  //       // const names = await Promise.all(studentList.map((studentId) => fetchStudentName(studentId)));
+  //       // console.log("Student names:", names);
+
+  //     } catch (error) {
+  //       console.error('Error fetching student names:', error);
+  //     }
+  //   };
+  
+  //   if (studentList.length > 0) {
+  //     fetchStudentNameList();
+  //   }
+  // }, [currClassId]);
+
+
 
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
@@ -115,7 +222,6 @@ function App() {
           </Typography>
           <div style={{ width: "100%" }}>
             
-              {/* You'll need to place some code here to generate the list of items in the selection */}
               <Select
               fullWidth={true}
               label="Class"
@@ -131,14 +237,43 @@ function App() {
           </div>
         </Grid>
 
+
         <Grid xs={12} md={8}>
           <Typography variant="h4" gutterBottom>
             Final Grades
           </Typography>
           <div>Place the grade table here</div>
            {/*need to use Table or DataGrid, as specified by assignment */}
-            
-           hi
+
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Student ID</TableCell>
+                  <TableCell>Student Name</TableCell>
+                  <TableCell>Class ID</TableCell>
+                  <TableCell>Class Name</TableCell>
+                  <TableCell>Semester</TableCell>
+                  <TableCell>Final Grade</TableCell>
+                </TableRow>
+              </TableHead>
+
+              <TableBody>
+                {studentList.map((studentId, index) => (
+           
+                  <TableRow key={studentId}>
+                  <TableCell>{studentId}</TableCell>
+                  <TableCell>{studentNameList[index]}</TableCell>
+                  <TableCell>{currClassId}</TableCell>
+                  <TableCell>{classList.find((item) => item.classId === currClassId)?.title}</TableCell>
+                  <TableCell>Fall 2022</TableCell>
+                  <TableCell>{/*  display final grade for each student */}</TableCell>
+                  </TableRow>
+                  
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Grid>
       </Grid>
     </div>
