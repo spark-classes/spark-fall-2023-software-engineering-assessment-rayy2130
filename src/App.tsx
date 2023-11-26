@@ -42,12 +42,11 @@ function App() {
 
     // }
     const fetchClassList = async() => {
-      const res = await fetch("https://spark-se-assessment-api.azurewebsites.net/api/class/listBySemester/fall2022?buid=U33152475",
+      const res = await fetch('https://spark-se-assessment-api.azurewebsites.net/api/class/listBySemester/fall2022?buid=U33152475',
       
       {
         method: 'GET',
         headers: GET_DEFAULT_HEADERS() 
-
       }
       )
       if (!res.ok) {
@@ -71,17 +70,34 @@ function App() {
 
 
   }, [BASE_API_URL]);
-   
-  
-  var i = 0
 
   useEffect(() => {
-  const fetchStudentList = async() => {
-   
-    const res = await fetch("https://spark-se-assessment-api.azurewebsites.net/api/class/listStudents/${classId[i]}?buid=U33152475")
-  }
-  i = i + 1;
-  }, []);
+    const fetchStudentList = async () => {
+      try {
+        if (currClassId) {
+          const res = await fetch(
+            `${BASE_API_URL}/class/listStudents/${currClassId}?buid=${MY_BU_ID}`,
+            {
+              method: 'GET',
+              headers: GET_DEFAULT_HEADERS(),
+            }
+          );
+
+          if (!res.ok) {
+            throw new Error('Failed to fetch student list');
+          }
+
+          const data = await res.json();
+          setStudentList(data);
+        }
+      } catch (error) {
+        console.error('Error fetching student list:');
+      }
+    };
+
+    fetchStudentList();
+    console.log("student list:", studentList);
+  }, [currClassId]);
 
 
 
