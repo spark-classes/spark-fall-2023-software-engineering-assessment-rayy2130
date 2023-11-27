@@ -13,14 +13,12 @@ import { IUniversityClass, IStudent, IAssignmentWeights} from "./types/api_types
 import {GradeTable} from "./components/GradeTable";
 import {calcAllFinalGrade} from "./utils/calculate_grade";
 import { log } from "console";
-//fetchAssignmentWeights, fetchStudentGrades, calculateStudentFinalGrade, 
 
 function App() {
   // You will need to use more of these!
   const [currClassId, setCurrClassId] = useState<string>("");
   const [classList, setClassList] = useState<IUniversityClass[]>([]);
   const [studentList, setStudentList] = useState<string[]>([]);
-  const [studentName, setStudentName] = useState<IStudent[]>([]);
   const [studentNameList, setStudentNameList] = useState<string[]>([]);
   const [finalGrade, setFinalGrade] = useState<number[]>([]);
 
@@ -38,19 +36,12 @@ function App() {
    * You will also need to explore the use of async/await.
    *
    */
-  const fetchSomeData = async () => {
-    const res = await fetch("https://cat-fact.herokuapp.com/facts/", {
-      method: "GET",
-    });
-    const json = await res.json();
-    console.log(json);
-  };
+
 
   useEffect(() => {
-    // const setClassList = async() => {
 
-    // }
     const fetchClassList = async() => {
+      // fetches a list of all class IDs
       const res = await fetch('https://spark-se-assessment-api.azurewebsites.net/api/class/listBySemester/fall2022?buid=U33152475',
       
       {
@@ -60,31 +51,28 @@ function App() {
       )
       if (!res.ok) {
         throw new Error('Failed to fetch class list');
-        console.error('Error fetching class list');
       }
       const data = await res.json();
-      console.log('API Response:', data);
+      // console.log('API Response:', data);
 
       setClassList(data);
-      console.log('class list: ', classList);
+      // console.log('class list: ', classList);
 
       const classIds = data.map((string: { classId: any; }) => string.classId);
-      console.log(classIds);
       return classIds;
     }
-
-    
     const classIds = fetchClassList();
-    console.log("a: ", classIds);
-
+   // console.log("classIds: ", classIds);
 
   }, [BASE_API_URL]);
 
+
   useEffect(() => {
+      // fetches a list of all student IDs, for a given class
     const fetchStudentList = async () => {
       try {
         if (currClassId) {
-          console.log("current classs ID: ", currClassId);
+         // console.log("current classs ID: ", currClassId);
 
           const res = await fetch(
             `${BASE_API_URL}/class/listStudents/${currClassId}?buid=${MY_BU_ID}`,
@@ -112,7 +100,7 @@ function App() {
 
 
   useEffect(() => {
-    // Fetch student names for the selected class
+      // Fetches a list of all student names for a given class
     const fetchStudentNameList = async () => {
       try {
         const names = await Promise.all(
@@ -141,107 +129,20 @@ function App() {
     };
 
     fetchStudentNameList();
-    console.log("student name:", studentNameList);
+   // console.log("student name:", studentNameList);
   }, [studentList]);
 
 
 
-  
-  // useEffect(() => {
-  //   const fetchStudentName = async (studentId: string) => {
-  //     try {
-  //       const res = await fetch(
-  //         `${BASE_API_URL}/student/GetById/${studentId}?buid=${MY_BU_ID}`,
-  //         {
-  //           method: 'GET',
-  //           headers: GET_DEFAULT_HEADERS(),
-  //         }
-  //       );
-  
-  //       if (!res.ok) {
-  //         throw new Error('Failed to fetch student list');
-  //       }
-  
-  //       const data = await res.json();
-  //       // console.log("data:", data);
-  //       // console.log("student name2:", data[0].name);
-
-  //       return data[0].name;
-  //     } catch (error) {
-  //       console.error('Error fetching student list:', error);
-  //       return null;
-  //     }
-  //   };
-  
-  //   const fetchStudentNameList = async () => {
-  //     try {
-  //       const setStudentNameList = [];
-        
-  //       for (let i = 0; i < studentList.length; i++) {
-  //         const studentId: string = studentList[i];
-  //         const studentName = await fetchStudentName(studentId);
-  //        // console.log("student name:", studentName);
-
-  //       if (studentName) {
-  //         setStudentNameList.push(studentName); // Adds the student name to the list
-  //         }
-
-  //       }
-  //       console.log("all student names:", setStudentNameList);
-
-
-
-  //     // try {
-  //     //   for (let i = 0; i < studentList.length; i++) {
-  //     //     fetchStudentName(studentList[i]);
-  //     //     console.log("student name:", studentName);
-  //     //   }
-  //       // const names = await Promise.all(studentList.map((studentId) => fetchStudentName(studentId)));
-  //       // console.log("Student names:", names);
-
-  //     } catch (error) {
-  //       console.error('Error fetching student names:', error);
-  //     }
-  //   };
-  
-  //   if (studentList.length > 0) {
-  //     fetchStudentNameList();
-  //   }
-  // }, [currClassId]);
-
-
-  // fetchAssignmentWeights(currClassId);
-  // fetchStudentGrades(studentList[0], currClassId);
-
-  // console.log("studentlist[0] : ", studentList[0])
-  // console.log("currClassId:", currClassId)
-
- // calculateStudentFinalGrade(studentList[0], currClassId);
-
- // console.log("calcAllFinalGrade[1]", a[1])
-
-
-  // useEffect(() => {
-  //   // Fetch student names for the selected class
-  //   const finalGrades = async () => {
-  //     const data = calcAllFinalGrade(currClassId);
-  //     setFinalGrade(data);
-
-  //     } catch (error) {
-  //       console.error("Error fetching student names:", error);
-  //     }
-  //   };
-
-  //   console.log("student name:", studentNameList);
-  // }, [studentList]);
-
-
   useEffect(() => {
+    // gets a list of the final grades for each student in a given class, 
+    // by calling function from calculate_grade.ts
+
     const fetchData = async () => {
       try {
         const finalGrade = await calcAllFinalGrade(currClassId, studentList);
         setFinalGrade(finalGrade);
-        console.log("calcAllFinalGrade returns", finalGrade);
+      //  console.log("calcAllFinalGrade returns", finalGrade);
       } catch (error) {
         console.error("Error fetching final grade:", error);
       }
@@ -285,8 +186,6 @@ function App() {
           <Typography variant="h4" gutterBottom>
             Final Grades
           </Typography>
-          <div>Place the grade table here</div>
-           {/*need to use Table or DataGrid, as specified by assignment */}
            <GradeTable
             studentList={studentList}
             studentNameList={studentNameList}

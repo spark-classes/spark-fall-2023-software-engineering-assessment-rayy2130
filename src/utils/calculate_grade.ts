@@ -14,6 +14,7 @@ import {GET_DEFAULT_HEADERS, BASE_API_URL, MY_BU_ID} from "../globals";
 import fetchStudentList from "../App";
 
 
+// fetches the assignment weights for a given class
 export async function fetchAssignmentWeights(classId: string) {
 
   const res = await fetch(`${BASE_API_URL}/class/listAssignments/${classId}?buid=${MY_BU_ID}`, {
@@ -33,7 +34,7 @@ export async function fetchAssignmentWeights(classId: string) {
     weight: assignment.weight,
   }));
   // console.log("assignment weights", weights);
-  console.log("assignment weights data" , data);
+  //console.log("assignment weights data" , data);
 
   
   return data
@@ -51,9 +52,9 @@ export async function fetchStudentGrades(studentID: string, classID: string) {
       throw new Error('Failed to fetch student grades');
     }
     const data = await res.json();
-    console.log(" fetch  student grades  :", data);
+   // console.log(" fetch  student grades  :", data);
     const grades = data.grades[0];
-    console.log(" data.grades[0] :", grades);
+    // console.log(" data.grades[0] :", grades);
 
     return grades 
 }
@@ -64,6 +65,7 @@ export async function fetchStudentGrades(studentID: string, classID: string) {
  * If you are reading here and you haven't read the top of the file...go back.
  */
 
+// calculates a given students final grade
 export async function calculateStudentFinalGrade(
   studentId: string,
   classId: string,
@@ -72,20 +74,12 @@ export async function calculateStudentFinalGrade(
     const assignmentWeights = await fetchAssignmentWeights(classId);
     const studentGrades = await fetchStudentGrades(studentId, classId);
 
-    // Convert studentGrades into array
-    console.log("fetchStudentGrades result: ", studentGrades)
-
-    //  gets only the grades from studentGrades
-    // const gradesObject = studentGrades.grades[0];
-    // console.log("gradesObject: ", gradesObject)
-
 
     const studentGradesArray = Object.entries(studentGrades).map(([assignmentId, grade]) => ({
       assignmentId,
       grade: Number(grade),
     }));
-    console.log("studentGradesArray: ", studentGradesArray)
-
+   // console.log("studentGradesArray: ", studentGradesArray)
 
     // Calculate weighted grades
     const weightedGrades = studentGradesArray.map(({ assignmentId, grade }) => {
@@ -100,15 +94,13 @@ export async function calculateStudentFinalGrade(
     });
 
     // Filter out assignments without corresponding weights
-  
-    console.log("weightedGrades:" , weightedGrades)
-    
+      
     const validWeightedGrades = weightedGrades.filter((wg) => wg !== 0);
 
     // Calculate final overall grade
     const overallGrade = validWeightedGrades.reduce((acc, curr) => acc + curr, 0);
 
-    console.log("Final overall grade:", overallGrade);
+  //  console.log("Final overall grade:", overallGrade);
     return overallGrade;
 
   } catch (error) {
@@ -118,51 +110,6 @@ export async function calculateStudentFinalGrade(
 }
 
 
-
-// export async function calculateStudentFinalGrade(
-//   studentId: string,
-//   classId: string,
-//   // klass: IUniversityClass
-//   ): {
-//   return null;
-// }
-
-// Promise<number> {
-//   const assignmentWeights = await fetchAssignmentWeights(classId);
-//   const studentGrades = await fetchStudentGrades(studentId, classId);
-
-//       // Convert studentGrades object into an array of objects
-//       const studentGradesArray = Object.entries(studentGrades.grades).map(([assignmentId, grade]) => ({
-//         assignmentId,
-//         grade: Number(grade),
-//       }));
-  
-//       // Calculate weighted grades
-//       const weightedGrades = studentGradesArray.map(({ assignmentId, grade }) => {
-//       const assignment = assignmentWeights.find((a) => a.assignmentId === assignmentId);
-  
-//         if (assignment) {
-//           const weightedGrade = assignment.weight * grade;
-//           return weightedGrade;
-//         }
-//       }
-//       return 0;
-//     }
-  
-    
-
-
-// var grade = 0
-// for (let i = 0; i < assignmentWeights.length; i++) {
-//   grade = grade + (assignmentWeights[i] * studentGrades[i])
-//   console.log("overall grade", grade)
-
-// }
-//   console.log("overall grade", grade)
-
-//   return grade;
-// }
-
 /**
  * You need to write this function! You might want to write more functions to make the code easier to read as well.
  * 
@@ -171,13 +118,16 @@ export async function calculateStudentFinalGrade(
  * @param classID The ID of the class for which we want to calculate the final grades
  * @returns Some data structure that has a list of each student and their final grade.
  */
+
+// finds an array  of all final grades for all student in a class
+// the index of the grade corresponds to the index of the student in studentList
 export async function calcAllFinalGrade(classID: string, studentList: string[]): Promise<number[]> {
   try {
     const finalGradesPromises = studentList.map(async (studentID) => {
       return await calculateStudentFinalGrade(studentID, classID);
     });
     const finalGrades = await Promise.all(finalGradesPromises);
-    console.log("final grades list: ", finalGrades)
+  // console.log("final grades list: ", finalGrades)
     
     return finalGrades;
   } catch (error) {
