@@ -9,8 +9,9 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
  * You will find globals from this file useful!
  */
 import {GET_DEFAULT_HEADERS, BASE_API_URL, MY_BU_ID} from "./globals";
-import { IUniversityClass, IStudent} from "./types/api_types";
+import { IUniversityClass, IStudent, IAssignmentWeights} from "./types/api_types";
 import {GradeTable} from "./components/GradeTable";
+import {fetchAssignmentWeights, fetchStudentGrades, calculateStudentFinalGrade} from "./utils/calculate_grade";
 
 function App() {
   // You will need to use more of these!
@@ -19,7 +20,7 @@ function App() {
   const [studentList, setStudentList] = useState<string[]>([]);
   const [studentName, setStudentName] = useState<IStudent[]>([]);
   const [studentNameList, setStudentNameList] = useState<string[]>([]);
-
+  const [finalGrade, setFinalGrade] = useState<IAssignmentWeights[]>([]);
 
   /**
    * This is JUST an example of how you might fetch some data(with a different API).
@@ -206,6 +207,14 @@ function App() {
   //   }
   // }, [currClassId]);
 
+
+  // fetchAssignmentWeights(currClassId);
+  // fetchStudentGrades(studentList[0], currClassId);
+
+  console.log("studentlist[0] : ", studentList[0])
+  console.log("currClassId:", currClassId)
+  
+  calculateStudentFinalGrade(studentList[0], currClassId);
 
 
   return (

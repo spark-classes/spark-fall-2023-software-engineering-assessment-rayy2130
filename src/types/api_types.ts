@@ -30,3 +30,10 @@ export interface IGradeTable {
   currClassId: string;
   classList: IUniversityClass[];
 }
+
+export interface IAssignmentWeights {
+  assignmentId: string;
+  classId: string;
+  date: string;
+  weight: number;
+}
