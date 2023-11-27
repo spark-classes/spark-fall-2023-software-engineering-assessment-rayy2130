@@ -29,6 +29,7 @@ export interface IGradeTable {
   studentNameList: string[];
   currClassId: string;
   classList: IUniversityClass[];
+  finalGrade: number[];
 }
 
 export interface IAssignmentWeights {
@@ -36,4 +37,8 @@ export interface IAssignmentWeights {
   classId: string;
   date: string;
   weight: number;
+}
+
+export interface IIStudentGrades {
+  [key: string]: string;
 }

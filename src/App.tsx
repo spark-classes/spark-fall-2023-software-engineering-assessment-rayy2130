@@ -11,7 +11,9 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import {GET_DEFAULT_HEADERS, BASE_API_URL, MY_BU_ID} from "./globals";
 import { IUniversityClass, IStudent, IAssignmentWeights} from "./types/api_types";
 import {GradeTable} from "./components/GradeTable";
-import {fetchAssignmentWeights, fetchStudentGrades, calculateStudentFinalGrade} from "./utils/calculate_grade";
+import {calcAllFinalGrade} from "./utils/calculate_grade";
+import { log } from "console";
+//fetchAssignmentWeights, fetchStudentGrades, calculateStudentFinalGrade, 
 
 function App() {
   // You will need to use more of these!
@@ -20,7 +22,7 @@ function App() {
   const [studentList, setStudentList] = useState<string[]>([]);
   const [studentName, setStudentName] = useState<IStudent[]>([]);
   const [studentNameList, setStudentNameList] = useState<string[]>([]);
-  const [finalGrade, setFinalGrade] = useState<IAssignmentWeights[]>([]);
+  const [finalGrade, setFinalGrade] = useState<number[]>([]);
 
   /**
    * This is JUST an example of how you might fetch some data(with a different API).
@@ -211,10 +213,42 @@ function App() {
   // fetchAssignmentWeights(currClassId);
   // fetchStudentGrades(studentList[0], currClassId);
 
-  console.log("studentlist[0] : ", studentList[0])
-  console.log("currClassId:", currClassId)
+  // console.log("studentlist[0] : ", studentList[0])
+  // console.log("currClassId:", currClassId)
+
+ // calculateStudentFinalGrade(studentList[0], currClassId);
+
+ // console.log("calcAllFinalGrade[1]", a[1])
+
+
+  // useEffect(() => {
+  //   // Fetch student names for the selected class
+  //   const finalGrades = async () => {
+  //     const data = calcAllFinalGrade(currClassId);
+  //     setFinalGrade(data);
+
+  //     } catch (error) {
+  //       console.error("Error fetching student names:", error);
+  //     }
+  //   };
+
+  //   console.log("student name:", studentNameList);
+  // }, [studentList]);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const finalGrade = await calcAllFinalGrade(currClassId, studentList);
+        setFinalGrade(finalGrade);
+        console.log("calcAllFinalGrade returns", finalGrade);
+      } catch (error) {
+        console.error("Error fetching final grade:", error);
+      }
+    };
   
-  calculateStudentFinalGrade(studentList[0], currClassId);
+    fetchData();
+  }, [studentList]);
 
 
   return (
@@ -258,6 +292,7 @@ function App() {
             studentNameList={studentNameList}
             currClassId={currClassId}
             classList={classList}
+            finalGrade={finalGrade}
           />
 
         </Grid>

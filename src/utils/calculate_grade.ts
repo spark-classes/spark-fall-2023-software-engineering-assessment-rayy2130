@@ -11,7 +11,7 @@ import React, { useEffect, useState } from "react";
 
 import { IUniversityClass, IAssignmentWeights} from "../types/api_types";
 import {GET_DEFAULT_HEADERS, BASE_API_URL, MY_BU_ID} from "../globals";
-
+import fetchStudentList from "../App";
 
 
 export async function fetchAssignmentWeights(classId: string) {
@@ -171,7 +171,17 @@ export async function calculateStudentFinalGrade(
  * @param classID The ID of the class for which we want to calculate the final grades
  * @returns Some data structure that has a list of each student and their final grade.
  */
-export async function calcAllFinalGrade(classID: string): Promise<undefined> {
-
-  return undefined;
+export async function calcAllFinalGrade(classID: string, studentList: string[]): Promise<number[]> {
+  try {
+    const finalGradesPromises = studentList.map(async (studentID) => {
+      return await calculateStudentFinalGrade(studentID, classID);
+    });
+    const finalGrades = await Promise.all(finalGradesPromises);
+    console.log("final grades list: ", finalGrades)
+    
+    return finalGrades;
+  } catch (error) {
+    console.error("Error calculating final grades:", error);
+    return [0]; 
+  }
 }
